@@ -13,8 +13,10 @@
       --bg1:#ffe9f3;
       --bg2:#e9f7ff;
       --fg:#2e2a36;
-      --accent:#ff7fbf;
-      --accent-2:#8acfff;
+      --accent:#ff7fbf;   /* color principal (rosado por defecto) */
+      --accent-2:#8acfff; /* color secundario del degradado */
+      --heart1:#ff7fbf;   /* color corazón 1 */
+      --heart2:#8acfff;   /* color corazón 2 */
       --card:#ffffffee;
       --muted:#6b6475;
       --ok:#5cc69a;
@@ -36,6 +38,45 @@
       overflow-x:hidden;
     }
 
+    /* Selector de color arriba a la derecha */
+    .color-picker{
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #ffffffcc;
+      padding: 6px 10px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,.1);
+      backdrop-filter: blur(8px);
+      border: 1px solid #f1eaf3;
+    }
+    .color-picker label{
+      cursor: pointer;
+      font-size: 18px;
+      user-select:none;
+    }
+    .color-picker input[type="color"]{
+      appearance: none;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      padding: 0;
+    }
+    .color-picker input[type="color"]::-webkit-color-swatch{
+      border-radius: 50%;
+      border: none;
+    }
+    .color-picker input[type="color"]::-moz-color-swatch{
+      border-radius: 50%;
+      border: none;
+    }
+
     /* corazones flotando */
     .floaters{
       position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;
@@ -49,8 +90,8 @@
       content:"";
       position:absolute; inset:0;
       background:
-        radial-gradient(circle at 60% 40%, #ff7fbf, #ff96ca 60%),
-        radial-gradient(circle at 40% 60%, #8acfff, #a6d8ff 60%);
+        radial-gradient(circle at 60% 40%, var(--heart1), color-mix(in oklab, var(--heart1), white 10%) 60%),
+        radial-gradient(circle at 40% 60%, var(--heart2), color-mix(in oklab, var(--heart2), white 10%) 60%);
       -webkit-mask: 
         radial-gradient(8px 8px at 40% 40%, #000 98%, transparent 100%),
         radial-gradient(8px 8px at 60% 40%, #000 98%, transparent 100%),
@@ -91,7 +132,7 @@
     }
     .logo{
       width:48px; height:48px; border-radius:14px;
-      background: linear-gradient(135deg, var(--accent), #ffd1e8);
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
       display:grid; place-items:center; color:white; font-weight:700;
       box-shadow: 0 8px 20px rgba(255,127,191,.35);
     }
@@ -117,14 +158,14 @@
     .bar > i{
       display:block; height:100%;
       width:0%;
-      background: linear-gradient(90deg, var(--accent) 0%, #ff9fd1 50%, var(--accent-2) 100%);
+      background: linear-gradient(90deg, var(--accent) 0%, color-mix(in oklab, var(--accent), white 10%) 50%, var(--accent-2) 100%);
       border-radius:inherit;
       transition: width .6s cubic-bezier(.2,.8,.2,1);
     }
     .dots{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap }
     .dot{
       width:10px; height:10px; border-radius:50%;
-      background:#e9e6ef; transition: transform .3s;
+      background:#e9e6ef; transition: transform .3s, background .3s;
     }
     .dot.active{ background: var(--accent); transform: scale(1.25); }
 
@@ -147,7 +188,7 @@
       font-size: clamp(22px, 3.5vw, 32px); margin:6px 0 0;
     }
     .handwrite{
-      font-family:"Caveat", cursive; font-size: clamp(20px, 3.4vw, 28px); color:#ff7fbf;
+      font-family:"Caveat", cursive; font-size: clamp(20px, 3.4vw, 28px); color:var(--accent);
     }
     .pill{
       display:inline-flex; gap:8px; align-items:center; justify-content:center;
@@ -170,7 +211,8 @@
     }
     .q textarea{ min-height:120px; resize:vertical }
     .q input:focus,.q textarea:focus{
-      border-color:#ffc1df; box-shadow: 0 0 0 6px #ffd7ea66;
+      border-color: color-mix(in oklab, var(--accent), white 25%);
+      box-shadow: 0 0 0 6px color-mix(in oklab, var(--accent), transparent 75%);
     }
     .hint{ color:#9a93a6; font-size:.92rem; margin-top:6px }
 
@@ -179,14 +221,13 @@
       display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:6px;
     }
     .btn{
-      --bg: linear-gradient(135deg, var(--accent), #ff9fd1);
       border:0; padding:12px 18px; border-radius:14px; color:white; font-weight:700; cursor:pointer;
-      box-shadow: 0 10px 20px rgba(255,127,191,.35);
-      transition: transform .12s ease, box-shadow .2s ease;
-      background: var(--bg);
+      box-shadow: 0 10px 20px rgba(0,0,0,.08);
+      transition: transform .12s ease, box-shadow .2s ease, background .3s;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
     }
     .btn.secondary{
-      --bg: linear-gradient(135deg, #e9edf8, #f4f5fb);
+      background: linear-gradient(135deg, #e9edf8, #f4f5fb);
       color:#4b4b55; box-shadow: 0 8px 16px rgba(0,0,0,.08); border:1px solid #e8e7ef;
     }
     .btn:active{ transform: translateY(1px) }
@@ -209,6 +250,12 @@
   </style>
 </head>
 <body>
+  <!-- Selector de color -->
+  <div class="color-picker" title="Cambia el color del tema">
+    <label for="accentColor">🎨</label>
+    <input type="color" id="accentColor" value="#ff7fbf" aria-label="Elegir color principal">
+  </div>
+
   <!-- Corazones flotando -->
   <div class="floaters" aria-hidden="true" id="floaters"></div>
 
@@ -317,8 +364,7 @@
   </div>
 
   <script>
-    
-    const WHATSAPP_NUMBER = "593978976404"; // <-- REEMPLAZA ESTO
+    const WHATSAPP_NUMBER = "593978976404"; // <-- tu número (solo dígitos, con código de país)
 
     // ====== corazones flotando ======
     const floaters = document.getElementById('floaters');
@@ -345,7 +391,6 @@
 
     function makeDots(){
       dotsWrap.innerHTML = '';
-      const dotCount = totalSteps; // show intro + 5
       for(let i=0;i<=totalSteps-1;i++){
         const d = document.createElement('div');
         d.className = 'dot';
@@ -396,9 +441,6 @@
       const a4 = getVal('q4');
       const a5 = getVal('q5');
 
-      // Mensaje en el formato pedido:
-      // 1. Respuesta 1
-      // 2. Respuesta 2
       const lines = [
         "Hola, te comparto mis respuestas:",
         `1. ${a1 || "(sin respuesta)"}`,
@@ -431,6 +473,75 @@
         goTo(step+1);
       }
     });
+
+    // ====== Cambiar color dinámicamente ======
+    const colorInput = document.getElementById('accentColor');
+
+    // utilidades para convertir y ajustar colores
+    function hexToHsl(hex){
+      hex = hex.replace('#','');
+      if(hex.length===3){ hex = hex.split('').map(c=>c+c).join(''); }
+      const r = parseInt(hex.substring(0,2),16)/255;
+      const g = parseInt(hex.substring(2,4),16)/255;
+      const b = parseInt(hex.substring(4,6),16)/255;
+      const max = Math.max(r,g,b), min = Math.min(r,g,b);
+      let h, s, l = (max + min) / 2;
+      if(max === min){ h = s = 0; }
+      else{
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch(max){
+          case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+          case g: h = (b - r) / d + 2; break;
+          case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+      }
+      return { h: h*360, s: s*100, l: l*100 };
+    }
+    function hslToHex(h, s, l){
+      h/=360; s/=100; l/=100;
+      function hue2rgb(p,q,t){
+        if(t<0) t+=1; if(t>1) t-=1;
+        if(t<1/6) return p + (q-p)*6*t;
+        if(t<1/2) return q;
+        if(t<2/3) return p + (q-p)*(2/3 - t)*6;
+        return p;
+      }
+      const q = l < .5 ? l*(1+s) : l + s - l*s;
+      const p = 2*l - q;
+      const r = Math.round(hue2rgb(p,q,h+1/3)*255);
+      const g = Math.round(hue2rgb(p,q,h)*255);
+      const b = Math.round(hue2rgb(p,q,h-1/3)*255);
+      return '#' + [r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+    }
+    function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+    function updateThemeFromHex(hex){
+      // color principal
+      document.documentElement.style.setProperty('--accent', hex);
+
+      // crear un color secundario armónico (hue + 40°, misma s, l un poco más claro)
+      const hsl = hexToHsl(hex);
+      const h2 = (hsl.h + 40) % 360;
+      const l2 = clamp(hsl.l + 8, 8, 95);
+      const accent2 = hslToHex(h2, hsl.s, l2);
+
+      // corazones: usar principal y un tono cercano
+      const heart2Hue = (hsl.h + 25) % 360;
+      const heart2 = hslToHex(heart2Hue, clamp(hsl.s, 25, 95), clamp(hsl.l + 5, 8, 92));
+
+      document.documentElement.style.setProperty('--accent-2', accent2);
+      document.documentElement.style.setProperty('--heart1', hex);
+      document.documentElement.style.setProperty('--heart2', accent2 || heart2);
+    }
+
+    colorInput.addEventListener('input', (e)=>{
+      updateThemeFromHex(e.target.value);
+    });
+
+    // inicializa con el valor por defecto
+    updateThemeFromHex(colorInput.value);
   </script>
 </body>
 </html>
