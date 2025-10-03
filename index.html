@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cuestionario ✅</title>
+
+  <!-- Tipografías lindas -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg1:#ffe9f3;
+      --bg2:#e9f7ff;
+      --fg:#2e2a36;
+      --accent:#ff7fbf;
+      --accent-2:#8acfff;
+      --card:#ffffffee;
+      --muted:#6b6475;
+      --ok:#5cc69a;
+      --shadow: 0 20px 50px rgba(0,0,0,.12);
+      --radius: 24px;
+      --glass: blur(10px) saturate(120%);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      color:var(--fg);
+      background:
+        radial-gradient(1200px 800px at 20% -10%, var(--bg2), transparent 60%),
+        radial-gradient(1200px 800px at 120% 120%, var(--bg1), transparent 40%),
+        linear-gradient(180deg, #fff 0%, #fff0 30%, #fff0 70%, #fff 100%);
+      overflow-x:hidden;
+    }
+
+    /* corazones flotando */
+    .floaters{
+      position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;
+    }
+    .floater{
+      position:absolute; width:16px; height:16px; opacity:.22; transform:translateY(110vh);
+      animation: rise var(--dur) linear infinite;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,.15));
+    }
+    .floater::before{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        radial-gradient(circle at 60% 40%, #ff7fbf, #ff96ca 60%),
+        radial-gradient(circle at 40% 60%, #8acfff, #a6d8ff 60%);
+      -webkit-mask: 
+        radial-gradient(8px 8px at 40% 40%, #000 98%, transparent 100%),
+        radial-gradient(8px 8px at 60% 40%, #000 98%, transparent 100%),
+        linear-gradient(45deg, transparent 44%, #000 45% 55%, transparent 56%) ;
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      border-radius:50%;
+    }
+    @keyframes rise{
+      from{ transform: translateY(110vh) translateX(var(--x,0)) rotate(0deg); }
+      to  { transform: translateY(-20vh) translateX(calc(var(--x,0) + 20px)) rotate(360deg); }
+    }
+
+    .container{
+      position:relative;
+      z-index:1;
+      min-height:100dvh;
+      display:grid;
+      place-items:center;
+      padding: clamp(16px, 4vw, 40px);
+    }
+
+    .card{
+      width:min(980px, 100%);
+      background: var(--card);
+      backdrop-filter: var(--glass);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: clamp(20px, 4vw, 36px);
+      overflow:hidden;
+      position:relative;
+      border:1px solid #ffffffaa;
+    }
+
+    /* encabezado */
+    .header{
+      display:flex; align-items:center; gap:16px; margin-bottom:16px;
+    }
+    .logo{
+      width:48px; height:48px; border-radius:14px;
+      background: linear-gradient(135deg, var(--accent), #ffd1e8);
+      display:grid; place-items:center; color:white; font-weight:700;
+      box-shadow: 0 8px 20px rgba(255,127,191,.35);
+    }
+    .title-box{
+      display:flex; flex-direction:column;
+    }
+    h1{
+      font-size: clamp(24px, 4vw, 38px);
+      line-height:1.1; margin:0; letter-spacing:.2px;
+    }
+    .subtitle{
+      margin:6px 0 0; color:var(--muted); font-weight:400; font-size: clamp(13px, 2.1vw, 15px);
+    }
+
+    /* progres bar + dots */
+    .progress{
+      margin: 12px 0 22px;
+    }
+    .bar{
+      height:10px; background:#f2f1f4; border-radius:999px; overflow:hidden;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,.06);
+    }
+    .bar > i{
+      display:block; height:100%;
+      width:0%;
+      background: linear-gradient(90deg, var(--accent) 0%, #ff9fd1 50%, var(--accent-2) 100%);
+      border-radius:inherit;
+      transition: width .6s cubic-bezier(.2,.8,.2,1);
+    }
+    .dots{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap }
+    .dot{
+      width:10px; height:10px; border-radius:50%;
+      background:#e9e6ef; transition: transform .3s;
+    }
+    .dot.active{ background: var(--accent); transform: scale(1.25); }
+
+    /* slides */
+    .slides{ position:relative; min-height: 440px; }
+    .slide{
+      position:absolute; inset:0; opacity:0; pointer-events:none;
+      transform: translateY(12px) scale(.98);
+      transition: opacity .55s ease, transform .55s ease;
+      display:grid; align-content:flex-start; gap:18px;
+    }
+    .slide.active{
+      opacity:1; pointer-events:auto; transform: translateY(0) scale(1);
+    }
+
+    .intro{
+      display:grid; gap:12px; text-align:center; place-content:center;
+    }
+    .intro h2{
+      font-size: clamp(22px, 3.5vw, 32px); margin:6px 0 0;
+    }
+    .handwrite{
+      font-family:"Caveat", cursive; font-size: clamp(20px, 3.4vw, 28px); color:#ff7fbf;
+    }
+    .pill{
+      display:inline-flex; gap:8px; align-items:center; justify-content:center;
+      padding:10px 14px; border-radius:999px; background:#fff7fb; color:#a44b7a;
+      border:1px solid #ffe1f0; width:fit-content; margin:0 auto;
+    }
+
+    /* campos */
+    .q{
+      background:#ffffffd9; border:1px solid #f0eaf4; border-radius:18px; padding:16px 18px;
+      box-shadow: 0 10px 20px rgba(0,0,0,.05);
+    }
+    .q label{
+      display:block; font-weight:600; margin-bottom:8px; font-size:16px;
+    }
+    .q input,.q textarea{
+      width:100%; border:1px solid #e8e2ee; background:#fff;
+      border-radius:14px; padding:12px 14px; font:inherit; color:inherit; outline:none;
+      transition: border .2s, box-shadow .2s;
+    }
+    .q textarea{ min-height:120px; resize:vertical }
+    .q input:focus,.q textarea:focus{
+      border-color:#ffc1df; box-shadow: 0 0 0 6px #ffd7ea66;
+    }
+    .hint{ color:#9a93a6; font-size:.92rem; margin-top:6px }
+
+    /* botones */
+    .actions{
+      display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:6px;
+    }
+    .btn{
+      --bg: linear-gradient(135deg, var(--accent), #ff9fd1);
+      border:0; padding:12px 18px; border-radius:14px; color:white; font-weight:700; cursor:pointer;
+      box-shadow: 0 10px 20px rgba(255,127,191,.35);
+      transition: transform .12s ease, box-shadow .2s ease;
+      background: var(--bg);
+    }
+    .btn.secondary{
+      --bg: linear-gradient(135deg, #e9edf8, #f4f5fb);
+      color:#4b4b55; box-shadow: 0 8px 16px rgba(0,0,0,.08); border:1px solid #e8e7ef;
+    }
+    .btn:active{ transform: translateY(1px) }
+
+    .summary{
+      text-align:center;
+    }
+    .summary .ok{
+      display:inline-flex; align-items:center; gap:10px; color:#1f7f5a;
+      background:#eafff5; border:1px solid #c7f5e5; border-radius:14px; padding:10px 12px;
+      font-weight:600;
+    }
+
+    /* responsivo */
+    @media (min-width: 840px){
+      .slide .grid{
+        display:grid; grid-template-columns:1fr 1fr; gap:16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Corazones flotando -->
+  <div class="floaters" aria-hidden="true" id="floaters"></div>
+
+  <div class="container">
+    <main class="card" role="region" aria-label="Cuestionario">
+      <div class="header">
+        <div class="logo">🙈</div>
+        <div class="title-box">
+          <h1>Cuestionario</h1>
+        </div>
+      </div>
+
+      <div class="progress" aria-hidden="true">
+        <div class="bar"><i id="bar"></i></div>
+        <div class="dots" id="dots" role="tablist" aria-label="Progreso"></div>
+      </div>
+
+      <section class="slides" id="slides">
+        <!-- 0. Intro -->
+        <article class="slide intro active" data-step="0" aria-live="polite">
+          <span class="pill">✨ Para Dome</span>
+          <h2>Hola, <span class="handwrite">Dome</span> 😇</h2>
+          <p>Espero me puedas ayudar a responder estas preguntitas. Solo son <b>5 preguntitas</b> ¿Si?</p>
+          <div class="actions">
+            <button class="btn" data-next>¡Sí, comenzemos!</button>
+          </div>
+        </article>
+
+        <!-- 1 -->
+        <article class="slide" data-step="1">
+          <div class="q">
+            <label for="q1">1) ¿Cómo te puedo llamar? 🫶</label>
+            <input id="q1" type="text" placeholder="Ej: Dome, Domecita, Domenica...." autocomplete="name" />
+            <p class="hint">Dome, Domecita, Domenica.</p>
+          </div>
+          <div class="actions">
+            <button class="btn secondary" data-prev>Atrás</button>
+            <button class="btn" data-next>Siguiente</button>
+          </div>
+        </article>
+
+        <!-- 2 -->
+        <article class="slide" data-step="2">
+          <div class="q">
+            <label for="q2">2) ¿Te gustan las flores? ¿Cuales son tus favoritas? 🌹</label>
+            <input id="q2" type="text" placeholder="Ej: Girasoles, Tulipanes, .." />
+          </div>
+          <div class="actions">
+            <button class="btn secondary" data-prev>Atrás</button>
+            <button class="btn" data-next>Siguiente</button>
+          </div>
+        </article>
+
+        <!-- 3 -->
+        <article class="slide" data-step="3">
+          <div class="q">
+            <label for="q3">3) ¿Que es lo que mas te gusta hacer en tus tiempos libres ? (Ademas de estar en mi cabeza)</label>
+            <input id="q3" type="text" placeholder="Bailar, Cantar, Ejercicio, Tomar" />
+          </div>
+          <div class="actions">
+            <button class="btn secondary" data-prev>Atrás</button>
+            <button class="btn" data-next>Siguiente</button>
+          </div>
+        </article>
+
+        <!-- 4 -->
+        <article class="slide" data-step="4">
+          <div class="q">
+            <label for="q4">4) ¿Que piensas hacer este fin de semana?</label>
+            <input id="q4" type="text" placeholder="Ej: Nada, salir contigo" />
+          </div>
+          <div class="actions">
+            <button class="btn secondary" data-prev>Atrás</button>
+            <button class="btn" data-next>Siguiente</button>
+          </div>
+        </article>
+
+        <!-- 5 -->
+        <article class="slide" data-step="5">
+          <div class="q">
+            <label for="q5">5) Si no tienes nada que hacer ¿Puedo pasar por ti y salir?</label>
+            <textarea id="q5" placeholder="Obvio"></textarea>
+          </div>
+          <div class="actions">
+            <button class="btn secondary" data-prev>Atrás</button>
+            <button class="btn" data-next>Ver resumen</button>
+          </div>
+        </article>
+
+        <!-- 6. Resumen + WhatsApp -->
+        <article class="slide summary" data-step="6" aria-live="polite">
+          <div class="ok">✔️ Resumen.</div>
+          <p style="margin:10px 0 0">Revísalo y si quieres, ajusta algo antes de enviarlo.</p>
+          <div class="q">
+            <label for="preview">Mensaje</label>
+            <textarea id="preview"></textarea>
+            <p class="hint">Se abrirá WhatsApp con este texto. Solo envías y ya 💌</p>
+          </div>
+          <div class="actions">
+            <button class="btn secondary" data-prev>Editar respuestas</button>
+            <button class="btn" id="sendWA">Enviar por WhatsApp</button>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    
+    const WHATSAPP_NUMBER = "593978976404"; // <-- REEMPLAZA ESTO
+
+    // ====== corazones flotando ======
+    const floaters = document.getElementById('floaters');
+    for(let i=0;i<22;i++){
+      const span = document.createElement('span');
+      span.className = 'floater';
+      const left = Math.random()*100;
+      const delay = Math.random()*6;
+      const dur = 12 + Math.random()*12;
+      span.style.left = left+'%';
+      span.style.animationDelay = (-delay)+'s';
+      span.style.setProperty('--dur', dur+'s');
+      span.style.setProperty('--x', (Math.random()*60-30)+'px');
+      floaters.appendChild(span);
+    }
+
+    // ====== Slides & Progreso ======
+    const slides = [...document.querySelectorAll('.slide')];
+    const totalSteps = slides.length - 1; // last is summary
+    const bar = document.getElementById('bar');
+    const dotsWrap = document.getElementById('dots');
+
+    let step = 0;
+
+    function makeDots(){
+      dotsWrap.innerHTML = '';
+      const dotCount = totalSteps; // show intro + 5
+      for(let i=0;i<=totalSteps-1;i++){
+        const d = document.createElement('div');
+        d.className = 'dot';
+        dotsWrap.appendChild(d);
+      }
+      updDots();
+    }
+    function updDots(){
+      const dots = [...dotsWrap.children];
+      dots.forEach((d,i)=> d.classList.toggle('active', i===Math.min(step, dots.length-1)));
+    }
+
+    function goTo(next){
+      slides[step].classList.remove('active');
+      step = Math.max(0, Math.min(slides.length-1, next));
+      slides[step].classList.add('active');
+
+      // progress: steps 0..6 (intro..summary)
+      const percent = Math.min(100, Math.max(0, (step / (slides.length-1)) * 100));
+      bar.style.width = percent + '%';
+      updDots();
+
+      // focus first input
+      const firstInput = slides[step].querySelector('input, textarea, button[data-next]');
+      if(firstInput) setTimeout(()=> firstInput.focus(), 120);
+
+      if(step === slides.length-1){
+        buildPreview();
+      }
+    }
+
+    document.addEventListener('click', (e)=>{
+      const next = e.target.closest('[data-next]');
+      const prev = e.target.closest('[data-prev]');
+      if(next) goTo(step+1);
+      if(prev) goTo(step-1);
+    });
+
+    makeDots();
+
+    // ====== Recolectar y armar mensaje ======
+    function getVal(id){ return (document.getElementById(id)?.value || '').trim(); }
+
+    function buildPreview(){
+      const a1 = getVal('q1');
+      const a2 = getVal('q2');
+      const a3 = getVal('q3');
+      const a4 = getVal('q4');
+      const a5 = getVal('q5');
+
+      // Mensaje en el formato pedido:
+      // 1. Respuesta 1
+      // 2. Respuesta 2
+      const lines = [
+        "Hola, te comparto mis respuestas:",
+        `1. ${a1 || "(sin respuesta)"}`,
+        `2. ${a2 || "(sin respuesta)"}`,
+        `3. ${a3 || "(sin respuesta)"}`,
+        `4. ${a4 || "(sin respuesta)"}`,
+        `5. ${a5 || "(sin respuesta)"}`
+      ];
+      const txt = lines.join("\n");
+      const preview = document.getElementById('preview');
+      preview.value = txt;
+    }
+
+    // ====== WhatsApp ======
+    document.getElementById('sendWA').addEventListener('click', ()=>{
+      const msg = document.getElementById('preview').value.trim();
+      if(!WHATSAPP_NUMBER || WHATSAPP_NUMBER === "593000000000"){
+        alert("Por favor, configura tu número de WhatsApp en el código (WHATSAPP_NUMBER).");
+        return;
+      }
+      const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+      window.open(url, "_blank");
+    });
+
+    // ====== Accesibilidad: Enter avanza ======
+    document.addEventListener('keydown', (e)=>{
+      const isInput = ['INPUT','TEXTAREA'].includes(document.activeElement.tagName);
+      if(e.key === 'Enter' && isInput && !e.shiftKey){
+        e.preventDefault();
+        goTo(step+1);
+      }
+    });
+  </script>
+</body>
+</html>
